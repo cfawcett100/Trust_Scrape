@@ -99,6 +99,7 @@ class csv_handler(object):
         return name_list
 
     def get_first_cons(self, location):
+        """Given a location in the list of trustees, it will find that trustees first hand connections"""
         trustee = self.get_trustee(location)
         trustees_trusts = self.get_trustees_trusts(trustee)
         cons = []
@@ -115,9 +116,11 @@ class csv_handler(object):
         #cons = list(set(cons))       In case of duplicates
 
     def print_list(self, input_list):
+        """Formatted printing for outputting connections"""
         for i in input_list:
             print(i)
 
+# Used for testing
 def main():
     file_name = "extract_trustee.csv"
     new_handler = csv_handler(file_name)
