@@ -127,8 +127,78 @@ class csv_handler(object):
         for i in input_list:
             print(i)
 
+    def lget_trust_trustees(self, trust):
+        """Takes a trust number and returns a list of associated trustees"""
+        if not isinstance(trust, int):
+            print("Input to lget_trust_trustees must be an int!")
+            exit()
+
+        trustName = self._trust_list[trust][0]
+        loc_list = []
+        for i in range(0, len(self._trust_list)):
+            if trustName == self._trust_list[i][0] and i not in loc_list:
+                loc_list.append(i)
+
+        return loc_list
+
+    def lget_trustees_trusts(self, trustee):
+        """Takes a trust number and returns a list of associated trustees"""
+        if not isinstance(trustee, int):
+            print("Input to lget_trustees_trusts must be an int!")
+            exit()
+
+        trusteeName = self._trust_list[trustee][1]
+        trust_list = []
+        for i in range(0, len(self._trust_list)):
+            if trusteeName == self._trust_list[i][1] and i not in trust_list:
+                trust_list.append(self._trust_list[i][0])
+
+        loc_list = []
+        for i in range(0, len(self._trust_list)):
+            if self._trust_list[i][0] in trust_list and i not in loc_list:
+                loc_list.append(i)
+
+        return loc_list
+
+    def list_of_lists_join(self, a):
+        oldList = list(a)
+        newList = []
+        for i in oldList:
+            for q in i:
+                newList.append(q)
+        return newList
+
     def connections(self, degree, location):
         """Takes a number and a location and finds all connections at the degree entered"""
+        sum_list = []
+        sum_list.append([location])
+
+        if degree == 0:
+            return sum_list
+
+        cons = self.lget_trustees_trusts(location)
+
+        print("Degree: ", degree)
+        print("Location: ", location)
+
+        trustees = []
+        for i in cons:
+            trustees += self.lget_trust_trustees(i)
+        # Need to remove duplicates here from trustees
+        trustees = list(set(trustees))
+
+        print("Trustees: ", trustees)
+
+        new_list = []
+        if degree > 0:
+            for i in trustees:
+                new_list += self.connections(degree-1, i)
+        new_list = self.list_of_lists_join(new_list)
+        sum_list.append(new_list)
+
+        print("Sum_list: ", sum_list)
+
+        return sum_list
 
     def fail(self, n):
         print("TEST ", n, " FAILED!!!")
@@ -181,6 +251,10 @@ def main():
     file_name = "test_data.csv"
     new_handler = csv_handler(file_name)
     new_handler.eq1(1, [["A"], ["D", "A", "F", "I"]], [["A"], ["I", "F", "D", "A"]])
+    # print(new_handler.lget_trustees_trusts(0))
+    # print(new_handler.lget_trust_trustees(3))
+
+    print(new_handler.connections(2, 0))
     # new_handler.tests()
 
 main()
