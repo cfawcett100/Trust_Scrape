@@ -12,11 +12,12 @@ class csv_handler(object):
         self.to_upper()
         print("FILE LOADED!")
 
+        print(datetime.datetime.now())
+
+    def run_tests(self):
         self.trustee_search()
         location = int(input("Enter location: "))
         self.get_first_cons(location)
-
-        print(datetime.datetime.now())
 
     def open_csv(self):
         """Opens the csv file and returns the csv reader"""
@@ -27,9 +28,15 @@ class csv_handler(object):
     def create_list(self, csv_reader):
         """Takes the items in the file and puts them into a list"""
         new_list = []
+        count = 1
         first = True
+
         for row in csv_reader:
+            # A horrible piece of code to break if the first row is an int
+            # Continues if it's the first line
             if first == True:
+                if not isinstance(row[0], str):
+                    return []
                 first = False
                 continue
 
@@ -120,9 +127,60 @@ class csv_handler(object):
         for i in input_list:
             print(i)
 
+    def connections(self, degree, location):
+        """Takes a number and a location and finds all connections at the degree entered"""
+
+    def fail(self, n):
+        print("TEST ", n, " FAILED!!!")
+        exit()
+
+    def eq(self, n, a, b):
+        """General function to see if two things are equal"""
+        n += 1
+        if a == b:
+            return n
+        else:
+            self.fail(n)
+            return n
+
+    def list_sub(self, a, b):
+        if len(a) < len(b):
+            return []
+        return [x for x in a if x not in b]
+
+    def list_comp(self, a, b):
+        for i in a:
+            if i not in b:
+                return False
+
+        return True
+
+    def eq1(self, n, inp, exp):
+        count = 1
+        while count <= len(exp) - 1:
+            inpComp = self.list_sub(inp[-count], inp[-count - 1])
+            expComp = self.list_sub(exp[-count], exp[-count - 1])
+            inpComp = sorted(inpComp)
+            expComp = sorted(expComp)
+            if inpComp != expComp:
+                self.fail(n)
+            count += 1
+
+        return n
+
+    def tests(self):
+        """Tests some other functions in the class"""
+        n = 0
+        n = self.eq(n, self.connections(0,0), [["A"]])
+        n = self.eq1(n, self.connections(1,0), [["A"], ["A", "B", "C", "D", "E", "F", "G"]])
+        n = self.eq1(n, self.connections(2,0), [["A"], ["A", "B", "C", "D", "E", "F", "G"], ["A", "B", "C", "D", "E", "F", "G", "H", "I"]])
+
+
 # Used for testing
 def main():
-    file_name = "extract_trustee.csv"
+    file_name = "test_data.csv"
     new_handler = csv_handler(file_name)
+    new_handler.eq1(1, [["A"], ["D", "A", "F", "I"]], [["A"], ["I", "F", "D", "A"]])
+    # new_handler.tests()
 
 main()
